@@ -2,29 +2,27 @@ package snake.core;
 
 public class GameState {
     private final Snake snake;
-    private Food food;
+    private Position foodPosition;
     private int score;
     private boolean gameOver;
-    private boolean won;
 
-    public GameState(Snake snake, Food food) {
+    public GameState(Snake snake, Position foodPosition, int score, boolean gameOver) {
         this.snake = snake;
-        this.food = food;
-        this.score = 0;
-        this.gameOver = false;
-        this.won = false;
+        this.foodPosition = foodPosition;
+        this.score = score;
+        this.gameOver = gameOver;
     }
 
     public Snake getSnake() {
         return snake;
     }
 
-    public Food getFood() {
-        return food;
+    public Position getFoodPosition() {
+        return foodPosition;
     }
 
-    public void setFood(Food food) {
-        this.food = food;
+    public void setFoodPosition(Position foodPosition) {
+        this.foodPosition = foodPosition;
     }
 
     public int getScore() {
@@ -41,13 +39,5 @@ public class GameState {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
-    }
-
-    public boolean isWon() {
-        return won;
-    }
-
-    public void setWon(boolean won) {
-        this.won = won;
     }
 }

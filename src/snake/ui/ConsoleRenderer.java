@@ -22,7 +22,7 @@ public class ConsoleRenderer implements Renderer {
         Snake snake = state.getSnake();
         Set<Position> bodyPositions = new HashSet<>(snake.getBody());
         Position head = snake.getHead();
-        Food food = state.getFood();
+        Position foodPosition = state.getFoodPosition();
 
         frame.append('+');
         for (int x = 0; x < GameConfig.GRID_WIDTH; x++) {
@@ -35,7 +35,7 @@ public class ConsoleRenderer implements Renderer {
             for (int x = 0; x < GameConfig.GRID_WIDTH; x++) {
                 Position current = new Position(x, y);
                 char cell = ' ';
-                if (food != null && current.equals(food.getPosition())) {
+                if (foodPosition != null && current.equals(foodPosition)) {
                     cell = '*';
                 }
                 if (bodyPositions.contains(current)) {
@@ -54,7 +54,7 @@ public class ConsoleRenderer implements Renderer {
         frame.append("Controls: W/A/S/D or Arrow Keys, Q to quit").append(System.lineSeparator());
 
         if (state.isGameOver()) {
-            frame.append(state.isWon() ? "You won!" : "Game over!").append(System.lineSeparator());
+            frame.append(state.isGameOver() ? "You won!" : "Game over!").append(System.lineSeparator());
         }
 
         System.out.print(frame);

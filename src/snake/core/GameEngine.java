@@ -5,7 +5,8 @@ import java.util.Deque;
 
 public class GameEngine {
     private final FoodSpawner foodSpawner;
-    private GameState state;
+    private GameState gameState;
+    private Direction queuedDirection;
 
     public GameEngine(FoodSpawner foodSpawner) {
         this.foodSpawner = foodSpawner;
@@ -21,45 +22,52 @@ public class GameEngine {
         }
 
         Snake snake = new Snake(initialBody, Direction.RIGHT);
-        Food food = foodSpawner.spawn(snake, GameConfig.GRID_WIDTH, GameConfig.GRID_HEIGHT);
-        state = new GameState(snake, food);
+        Position foodPosition = foodSpawner.spawn(snake);
+        gameState = new GameState(snake, foodPosition, 0, false);
+        queuedDirection = null;
     }
 
-    public GameState getState() {
-        return state;
+    public void queueDirection(Direction direction) {
+        queuedDirection = direction;
     }
 
-    public void update(Direction inputDirection) {
-        if (state == null || state.isGameOver()) {
+    public void update() {
+        if (gameState == null || gameState.isGameOver()) {
             return;
         }
 
-        Snake snake = state.getSnake();
-        snake.setDirection(inputDirection);
+        Snake snake = gameState.getSnake();
+        if (queuedDirection != null) {
+            snake.setDirection(queuedDirection);
+            queuedDirection = null;
+        }
 
         Position nextHead = getNextHead(snake.getHead(), snake.getCurrentDirection());
         if (nextHead == null) {
-            state.setGameOver(true);
+            gameState.setGameOver(true);
             return;
         }
 
-        boolean grow = state.getFood() != null && nextHead.equals(state.getFood().getPosition());
+        Position foodPosition = gameState.getFoodPosition();
+        boolean grow = foodPosition != null && nextHead.equals(foodPosition);
         if (isCollision(nextHead, snake, grow)) {
-            state.setGameOver(true);
+            gameState.setGameOver(true);
             return;
         }
 
-        snake.move(grow);
+        snake.addHead(nextHead);
+        if (!grow) {
+            snake.removeTail();
+        }
 
         if (grow) {
-            state.incrementScore();
-            Food nextFood = foodSpawner.spawn(snake, GameConfig.GRID_WIDTH, GameConfig.GRID_HEIGHT);
-            state.setFood(nextFood);
-            if (nextFood == null) {
-                state.setWon(true);
-                state.setGameOver(true);
-            }
+            gameState.incrementScore();
+            gameState.setFoodPosition(foodSpawner.spawn(snake));
         }
+    }
+
+    public GameState getGameState() {
+        return gameState;
     }
 
     private Position getNextHead(Position head, Direction direction) {

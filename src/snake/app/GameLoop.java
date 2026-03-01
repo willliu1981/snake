@@ -20,14 +20,14 @@ public class GameLoop {
 
     public void run() {
         engine.initialize();
-        GameState state = engine.getState();
+        GameState state = engine.getGameState();
         renderer.render(state);
 
         while (!state.isGameOver() && !inputHandler.shouldQuit()) {
             long tickStart = System.currentTimeMillis();
 
             Direction inputDirection = inputHandler.pollDirection();
-            engine.update(inputDirection);
+            engine.update();
             renderer.render(state);
 
             long elapsed = System.currentTimeMillis() - tickStart;
